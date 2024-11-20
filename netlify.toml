@@ -1,0 +1,9 @@
+[build]
+publish = "static"  # This is where your built files should go
+command = "npm run tailwind"  # Adjust to whatever build command you have
+
+[[redirects]]
+from = "/index.html"
+to = "/index.html"
+status = 200
+force = true
