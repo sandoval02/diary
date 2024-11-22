@@ -1,17 +1,21 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.serving import run_simple
 import os
 
-# Initialize the Flask application
 app = Flask(__name__)
-
-# Set the secret key for Flask sessions
 app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')
 
-# Define the home route
-@app.route("/")
+@app.route('/')
 def home():
-    return render_template("index.html")  # Render index.html from the 'templates' directory
+    return render_template("index.html")
 
-# For local development
+# Wrap the Flask app in the Vercel function handler
+def handler(event, context):
+    return DispatcherMiddleware(app.wsgi_app, {
+        '/.netlify/functions/handler': app
+    })(event, context)
+
+# Local testing (if needed)
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    run_simple('0.0.0.0', 5000, app)
